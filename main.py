@@ -16,7 +16,7 @@ def get_conversation_ids():
     initial_timestamp = int(time.time())
     # set up the Intercom API client
     url = "https://api.intercom.io/conversations/search"
-    for i in range(1, config.days_to_check+1):
+    for i in range(1, config.days_to_check + 1):
         # Calculate UNIX timestamps
         start_timestamp = initial_timestamp - ((i - 1) * 24 * 60 * 60)
         end_timestamp = start_timestamp - (1 * 24 * 60 * 60)
@@ -56,6 +56,7 @@ def get_conversation_ids():
 def download_attachments_by_id(conversation_data_inner, conversation_id_inner):
     # Initialise counters
     image_counter = 0
+    print(conversation_data_inner)
     store_code = conversation_data_inner['custom_attributes']['Store code']
     folder_path = f"attachments/{store_code}"
     accepted_values = False
@@ -67,6 +68,44 @@ def download_attachments_by_id(conversation_data_inner, conversation_id_inner):
         accepted_values = True
     print(accepted_values)
     if accepted_values == True:
+        for i in range(len(conversation_data['source']['attachments'])):
+            html_content = conversation_data['source']['attachments'][i]['url']
+            try:
+                image_url = conversation_data['source']['attachments'][i]['url']
+            except TypeError:
+                pass
+            # Download image
+            else:
+                if not os.path.exists(folder_path):
+                    os.makedirs(folder_path)
+                    print(f"Folder {store_code} created successfully.")
+                response_inner = requests.get(image_url)
+                # Categorise image
+                if "gif" in image_url.lower():
+                    pass
+                else:
+                    with open(f'attachments/{store_code}/{store_code}_{image_counter}.jpg', 'wb') as f:
+                        f.write(response_inner.content)
+                    image_counter += 1
+        html_content = conversation_data['source']['body']
+        try:
+            soup = BeautifulSoup(html_content, 'html.parser')
+            image_url = soup.find('img')['src']
+        except TypeError:
+            pass
+        # Download image
+        else:
+            if not os.path.exists(folder_path):
+                os.makedirs(folder_path)
+                print(f"Folder {store_code} created successfully.")
+            response_inner = requests.get(image_url)
+            # Categorise image
+            if "gif" in image_url.lower():
+                pass
+            else:
+                with open(f'attachments/{store_code}/{store_code}_{image_counter}.jpg', 'wb') as f:
+                    f.write(response_inner.content)
+                image_counter += 1
         for i in range(len(conversation_data['conversation_parts']['conversation_parts'])):
             html_content = conversation_data['conversation_parts']['conversation_parts'][i]['body']
             try:
@@ -84,7 +123,7 @@ def download_attachments_by_id(conversation_data_inner, conversation_id_inner):
                 if "gif" in image_url.lower():
                     pass
                 else:
-                    with open(f'attachments/{store_code}/{image_counter}.jpg', 'wb') as f:
+                    with open(f'attachments/{store_code}/{store_code}_{image_counter}.jpg', 'wb') as f:
                         f.write(response_inner.content)
                     image_counter += 1
 
@@ -110,7 +149,6 @@ conversation_ids = get_conversation_ids()
 for conversation_id in conversation_ids:
     response = requests.get(f'https://api.intercom.io/conversations/{conversation_id}', auth=HTTPBasicAuth(TOKEN, ""))
     conversation_data = json.loads(response.text)
-    print(conversation_data)
     download_attachments_by_id(conversation_data, conversation_id)
 # Delete empty Folders:
 delete_empty_folders("attachments")
