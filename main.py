@@ -189,6 +189,7 @@ def log_file():
 def upload_to_google_drive():
     # Path to the folder you want to upload
     folder_path = 'attachments'
+    parent_folder_id = 'your-parent-folder-id'
 
     # Base64-encoded service account credentials JSON string
     credentials_base64 = os.getenv("CREDENTIALS")
@@ -202,6 +203,8 @@ def upload_to_google_drive():
                                                                         scopes=[
                                                                             'https://www.googleapis.com/auth/drive'])
     drive_service = build('drive', 'v3', credentials=credentials)
+
+    # Upload files in the folder and its subdirectories
 
     # Function to recursively upload files in a directory
     def upload_files_in_directory(directory_path, parent_folder_id=None):
@@ -228,18 +231,21 @@ def upload_to_google_drive():
                 folder_id = created_folder.get('id')
                 upload_files_in_directory(file_path, parent_folder_id=folder_id)
 
-    # Create a folder on Google Drive
-    folder_metadata = {
-        'name': os.path.basename(folder_path),
-        'mimeType': 'application/vnd.google-apps.folder'
-    }
-    created_folder = drive_service.files().create(body=folder_metadata, fields='id').execute()
-    folder_id = created_folder.get('id')
+        # Create a folder on Google Drive
+        folder_metadata = {
+            'name': os.path.basename(folder_path),
+            'mimeType': 'application/vnd.google-apps.folder'
+        }
+        created_folder = drive_service.files().create(body=folder_metadata, fields='id').execute()
+        folder_id = created_folder.get('id')
 
-    # Upload files in the folder and its subdirectories
-    upload_files_in_directory(folder_path, parent_folder_id=folder_id)
+        # Upload files in the folder and its subdirectories
+        upload_files_in_directory(folder_path, parent_folder_id=folder_id)
 
-    print("Folder uploaded successfully!")
+        print("Folder uploaded successfully!")
+
+    upload_files_in_directory(folder_path, parent_folder_id)  # Pass parent_folder_id here
+
 
 # initial values
 TOKEN = os.getenv("TOKEN_INTERCOM")
