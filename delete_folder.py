@@ -1,6 +1,4 @@
 import os
-import sys
-import shutil
 
 # Get directory name
 mydir = 'attachments/'
