@@ -198,23 +198,48 @@ def upload_to_google_drive():
     credentials_info = json.loads(credentials_json)
 
     # Initialize the Drive API client
-    credentials = service_account.Credentials.from_service_account_info(credentials_info, scopes=[
-        'https://www.googleapis.com/auth/drive'])
+    credentials = service_account.Credentials.from_service_account_info(credentials_info,
+                                                                        scopes=[
+                                                                            'https://www.googleapis.com/auth/drive'])
     drive_service = build('drive', 'v3', credentials=credentials)
-    folder_id = os.getenv("FOLDERID")
 
-    # Iterate over files in the folder and upload them
-    files = glob.glob(os.path.join(folder_path, '*'))
-    for file_path in files:
-        file_metadata = {
-            'name': os.path.basename(file_path),
-            'parents': [folder_id]
-        }
-        media = MediaFileUpload(file_path, resumable=True)
-        drive_service.files().create(body=file_metadata, media_body=media).execute()
+    # Function to recursively upload files in a directory
+    def upload_files_in_directory(directory_path, parent_folder_id=None):
+        # Get the files in the directory
+        files = glob.glob(os.path.join(directory_path, '*'))
+
+        for file_path in files:
+            if os.path.isfile(file_path):
+                # File upload
+                file_metadata = {
+                    'name': os.path.basename(file_path),
+                    'parents': [parent_folder_id] if parent_folder_id else []
+                }
+                media = MediaFileUpload(file_path, resumable=True)
+                drive_service.files().create(body=file_metadata, media_body=media).execute()
+            elif os.path.isdir(file_path):
+                # Subdirectory upload
+                folder_metadata = {
+                    'name': os.path.basename(file_path),
+                    'mimeType': 'application/vnd.google-apps.folder',
+                    'parents': [parent_folder_id] if parent_folder_id else []
+                }
+                created_folder = drive_service.files().create(body=folder_metadata, fields='id').execute()
+                folder_id = created_folder.get('id')
+                upload_files_in_directory(file_path, parent_folder_id=folder_id)
+
+    # Create a folder on Google Drive
+    folder_metadata = {
+        'name': os.path.basename(folder_path),
+        'mimeType': 'application/vnd.google-apps.folder'
+    }
+    created_folder = drive_service.files().create(body=folder_metadata, fields='id').execute()
+    folder_id = created_folder.get('id')
+
+    # Upload files in the folder and its subdirectories
+    upload_files_in_directory(folder_path, parent_folder_id=folder_id)
 
     print("Folder uploaded successfully!")
-
 
 # initial values
 TOKEN = os.getenv("TOKEN_INTERCOM")
