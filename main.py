@@ -50,7 +50,7 @@ def get_conversation_ids():
             "content-type": "application/json",
             "authorization": f"Bearer {token}"
         }
-        tickets_in_requested_time_response = requests.post(url, json=payload, headers=headers, verify=False)
+        tickets_in_requested_time_response = requests.post(url, json=payload, headers=headers)
         data = tickets_in_requested_time_response.json()
         # iterate through the tickets and append their IDs to the list
         for ticket in data['conversations']:
@@ -88,7 +88,7 @@ def download_attachments_by_id(conversation_data_inner, conversation_id_inner):
                 if not os.path.exists(folder_path):
                     os.makedirs(folder_path)
                     print(f"Folder {store_code} created successfully.")
-                response_inner = requests.get(image_url, verify=False)
+                response_inner = requests.get(image_url)
                 # Categorise image
                 if "gif" in image_url.lower():
                     pass
@@ -107,7 +107,7 @@ def download_attachments_by_id(conversation_data_inner, conversation_id_inner):
             if not os.path.exists(folder_path):
                 os.makedirs(folder_path)
                 print(f"Folder {store_code} created successfully.")
-            response_inner = requests.get(image_url, verify=False)
+            response_inner = requests.get(image_url)
             # Categorise image
             if "gif" in image_url.lower():
                 pass
@@ -127,7 +127,7 @@ def download_attachments_by_id(conversation_data_inner, conversation_id_inner):
                 if not os.path.exists(folder_path):
                     os.makedirs(folder_path)
                     print(f"Folder {store_code} created successfully.")
-                response_inner = requests.get(image_url, verify=False)
+                response_inner = requests.get(image_url)
                 # Categorise image
                 if "gif" in image_url.lower():
                     pass
@@ -190,10 +190,10 @@ def upload_to_google_drive():
     folder_path = 'attachments'
 
     # Path to the service account JSON key file
-    credentials_json = os.getenv("CREDENTIALS")
+    credentials_info = os.getenv("CREDENTIALS")
 
     # Initialize the Drive API client
-    credentials = service_account.Credentials.from_service_account_info(credentials_json, scopes=[
+    credentials = service_account.Credentials.from_service_account_info(credentials_info, scopes=[
         'https://www.googleapis.com/auth/drive'])
     drive_service = build('drive', 'v3', credentials=credentials)
     folder_id = os.getenv("FOLDERID")
@@ -217,8 +217,7 @@ conversation_ids = get_conversation_ids()
 date = get_date()
 # Get the conversation data
 for conversation_id in conversation_ids:
-    response = requests.get(f'https://api.intercom.io/conversations/{conversation_id}', auth=HTTPBasicAuth(TOKEN, ""),
-                            verify=False)
+    response = requests.get(f'https://api.intercom.io/conversations/{conversation_id}', auth=HTTPBasicAuth(TOKEN, ""))
     conversation_data = json.loads(response.text)
     download_attachments_by_id(conversation_data, conversation_id)
 # Delete empty Folders:
