@@ -189,7 +189,7 @@ def log_file():
 def upload_to_google_drive():
     # Path to the folder you want to upload
     folder_path = 'attachments'
-    parent_folder_id = 'your-parent-folder-id'
+    parent_folder_id = os.getenv("FOLDERID")
 
     # Base64-encoded service account credentials JSON string
     credentials_base64 = os.getenv("CREDENTIALS")
