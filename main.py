@@ -183,7 +183,8 @@ def log_file():
     formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
     logger_file_handler.setFormatter(formatter)
     logger.addHandler(logger_file_handler)
-    logger.info(f'Job Completed')
+    if __name__ == "__main__":
+        logger.info(f'Job Completed')
 
 
 def upload_to_google_drive():
@@ -243,8 +244,6 @@ def upload_to_google_drive():
     upload_files_in_directory(folder_path, parent_folder_id=parent_folder_id)
 
     print("Folder uploaded successfully!")
-
-
 
 
 # initial values
