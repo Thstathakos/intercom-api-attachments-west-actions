@@ -41,7 +41,7 @@ def get_conversation_ids():
             "content-type": "application/json",
             "authorization": f"Bearer {token}"
         }
-        tickets_in_requested_time_response = requests.post(url, json=payload, headers=headers)
+        tickets_in_requested_time_response = requests.post(url, json=payload, headers=headers, verify=False)
         data = tickets_in_requested_time_response.json()
         # iterate through the tickets and append their IDs to the list
         for ticket in data['conversations']:
@@ -58,7 +58,7 @@ def download_attachments_by_id(conversation_data_inner, conversation_id_inner):
     image_counter = 0
     print(conversation_data_inner)
     store_code = conversation_data_inner['custom_attributes']['Store code']
-    folder_path = f"attachments/{store_code}"
+    folder_path = f"attachments/Data extracted on_{date}/{store_code}"
     accepted_values = False
     # Extract image URLs from the HTML content
     print(conversation_data_inner['custom_attributes']['Phase'])
@@ -79,12 +79,12 @@ def download_attachments_by_id(conversation_data_inner, conversation_id_inner):
                 if not os.path.exists(folder_path):
                     os.makedirs(folder_path)
                     print(f"Folder {store_code} created successfully.")
-                response_inner = requests.get(image_url)
+                response_inner = requests.get(image_url, verify=False)
                 # Categorise image
                 if "gif" in image_url.lower():
                     pass
                 else:
-                    with open(f'attachments/{store_code}/{store_code}_{image_counter}.jpg', 'wb') as f:
+                    with open(f'{folder_path}/{store_code}_{image_counter}.jpg', 'wb') as f:
                         f.write(response_inner.content)
                     image_counter += 1
         html_content = conversation_data['source']['body']
@@ -98,12 +98,12 @@ def download_attachments_by_id(conversation_data_inner, conversation_id_inner):
             if not os.path.exists(folder_path):
                 os.makedirs(folder_path)
                 print(f"Folder {store_code} created successfully.")
-            response_inner = requests.get(image_url)
+            response_inner = requests.get(image_url, verify=False)
             # Categorise image
             if "gif" in image_url.lower():
                 pass
             else:
-                with open(f'attachments/{store_code}/{store_code}_{image_counter}.jpg', 'wb') as f:
+                with open(f'{folder_path}/{store_code}_{image_counter}.jpg', 'wb') as f:
                     f.write(response_inner.content)
                 image_counter += 1
         for i in range(len(conversation_data['conversation_parts']['conversation_parts'])):
@@ -118,12 +118,12 @@ def download_attachments_by_id(conversation_data_inner, conversation_id_inner):
                 if not os.path.exists(folder_path):
                     os.makedirs(folder_path)
                     print(f"Folder {store_code} created successfully.")
-                response_inner = requests.get(image_url)
+                response_inner = requests.get(image_url, verify=False)
                 # Categorise image
                 if "gif" in image_url.lower():
                     pass
                 else:
-                    with open(f'attachments/{store_code}/{store_code}_{image_counter}.jpg', 'wb') as f:
+                    with open(f'{folder_path}/{store_code}_{image_counter}.jpg', 'wb') as f:
                         f.write(response_inner.content)
                     image_counter += 1
 
@@ -142,12 +142,32 @@ def delete_empty_folders(root_folder):
             shutil.rmtree(foldername)
 
 
+def get_date():
+    # Get the current time in seconds
+    current_time = time.time()
+
+    # Convert the current time to a struct_time object
+    current_struct_time = time.localtime(current_time)
+
+    # Extract the day, month, and year from the struct_time object
+    day = current_struct_time.tm_mday
+    month = current_struct_time.tm_mon
+    year = current_struct_time.tm_year
+
+    # Create the formatted date string
+    date_string = f"{day:02d}-{month:02d}-{year}"
+
+    # Print the formatted date string
+    return date_string
+
+
 # initial values
 TOKEN = config.TOKEN
 conversation_ids = get_conversation_ids()
+date = get_date()
 # Get the conversation data
 for conversation_id in conversation_ids:
-    response = requests.get(f'https://api.intercom.io/conversations/{conversation_id}', auth=HTTPBasicAuth(TOKEN, ""))
+    response = requests.get(f'https://api.intercom.io/conversations/{conversation_id}', auth=HTTPBasicAuth(TOKEN, ""), verify=False)
     conversation_data = json.loads(response.text)
     download_attachments_by_id(conversation_data, conversation_id)
 # Delete empty Folders:
