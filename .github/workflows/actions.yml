@@ -30,13 +30,13 @@ jobs:
         TOKEN_INTERCOM: ${{ secrets.TOKEN_INTERCOM }}
       run: python main.py
 
-
-    - name: Upload a file to Google Drive
-      uses: willo32/google-drive-upload-action@v1
+    - name: Upload to gdrive
+      uses: adityak74/google-drive-upload-git-action@main
       with:
-        target: 'attachments'
-        credentials: ${{ secrets.credentials }}
-        parent_folder_id: ${{ secrets.folderId }}
+          credentials: ${{ secrets.credentials }}
+          filename: "attachments/#"
+          folderId: ${{ secrets.folderId }}
+          overwrite: "true" # optional boolean
 
     - name: execute py script # run main.py
       run: python delete_folder.py
