@@ -165,6 +165,7 @@ def get_date():
     # Print the formatted date string
     return date_string
 
+
 def log_file():
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
@@ -179,16 +180,17 @@ def log_file():
     logger.addHandler(logger_file_handler)
     logger.info(f'Job Completed')
 
+
 # initial values
-TOKEN = config.TOKEN
+TOKEN = os.getenv("TOKEN_INTERCOM")
 conversation_ids = get_conversation_ids()
 date = get_date()
 # Get the conversation data
 for conversation_id in conversation_ids:
-    response = requests.get(f'https://api.intercom.io/conversations/{conversation_id}', auth=HTTPBasicAuth(TOKEN, ""), verify=False)
+    response = requests.get(f'https://api.intercom.io/conversations/{conversation_id}', auth=HTTPBasicAuth(TOKEN, ""),
+                            verify=False)
     conversation_data = json.loads(response.text)
     download_attachments_by_id(conversation_data, conversation_id)
 # Delete empty Folders:
 delete_empty_folders("attachments")
 log_file()
-
