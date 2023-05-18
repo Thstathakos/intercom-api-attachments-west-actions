@@ -32,9 +32,6 @@ jobs:
         FOLDERID: ${{ secrets.FOLDERID }}
       run: python main.py
 
-    - name: execute py script # run main.py
-      run: python delete_folder.py
-
     - name: commit files
       run: |
         git config --local user.email "action@github.com"
