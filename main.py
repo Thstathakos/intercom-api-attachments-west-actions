@@ -8,6 +8,10 @@ import config
 import time
 import logging
 import logging.handlers
+import glob
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload
 
 
 def get_conversation_ids():
@@ -17,7 +21,7 @@ def get_conversation_ids():
     except KeyError:
         token = "Token not available!"
     # create an empty list to store the ticket IDs
-    ticket_ids = [187701600007224,187701600007304]
+    ticket_ids = [187701600007224, 187701600007304]
     initial_timestamp = int(time.time())
     # set up the Intercom API client
     url = "https://api.intercom.io/conversations/search"
@@ -181,6 +185,32 @@ def log_file():
     logger.info(f'Job Completed')
 
 
+def upload_to_google_drive():
+    # Path to the folder you want to upload
+    folder_path = 'attachments'
+
+    # Path to the service account JSON key file
+    credentials_path = os.getenv("CREDENTIALS")
+
+    # Initialize the Drive API client
+    credentials = service_account.Credentials.from_service_account_file(credentials_path, scopes=[
+        'https://www.googleapis.com/auth/drive'])
+    drive_service = build('drive', 'v3', credentials=credentials)
+    folder_id = os.getenv("FOLDERID")
+
+    # Iterate over files in the folder and upload them
+    files = glob.glob(os.path.join(folder_path, '*'))
+    for file_path in files:
+        file_metadata = {
+            'name': os.path.basename(file_path),
+            'parents': [folder_id]
+        }
+        media = MediaFileUpload(file_path, resumable=True)
+        drive_service.files().create(body=file_metadata, media_body=media).execute()
+
+    print("Folder uploaded successfully!")
+
+
 # initial values
 TOKEN = os.getenv("TOKEN_INTERCOM")
 conversation_ids = get_conversation_ids()
@@ -193,4 +223,5 @@ for conversation_id in conversation_ids:
     download_attachments_by_id(conversation_data, conversation_id)
 # Delete empty Folders:
 delete_empty_folders("attachments")
+upload_to_google_drive()
 log_file()

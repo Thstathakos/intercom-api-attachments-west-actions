@@ -28,28 +28,9 @@ jobs:
     - name: execute py script # run main.py
       env:
         TOKEN_INTERCOM: ${{ secrets.TOKEN_INTERCOM }}
+        CREDENTIALS: ${{ secrets.CREDENTIALS }}
+        FOLDERID: ${{ secrets.FOLDERID }}
       run: python main.py
-
-    - name: Make Directory Structure
-      run: |
-        mkdir -p "attachments/*/*/*"
-        date +%s > "attachments/*/*/*"
-    - name: Mirror Directory Structure
-      uses: adityak74/google-drive-upload-git-action@main
-      with:
-        credentials: ${{ secrets.DRIVE_CREDENTIALS }}
-        filename: "attachments/*/*/*"
-        folderId: ${{ secrets.folderId }}
-        overwrite: "false"
-        mirrorDirectoryStructure: "true"
-
-    - name: Upload to gdrive
-      uses: adityak74/google-drive-upload-git-action@main
-      with:
-          credentials: ${{ secrets.credentials }}
-          filename: "attachments/*/*/*"
-          folderId: ${{ secrets.folderId }}
-          overwrite: "true" # optional boolean
 
     - name: execute py script # run main.py
       run: python delete_folder.py
