@@ -1,3 +1,4 @@
+import base64
 import requests
 from requests.auth import HTTPBasicAuth
 import json
@@ -189,8 +190,12 @@ def upload_to_google_drive():
     # Path to the folder you want to upload
     folder_path = 'attachments'
 
-    # Path to the service account JSON key file
-    credentials_info = json.dumps(os.getenv("CREDENTIALS"))
+    # Base64-encoded service account credentials JSON string
+    credentials_base64 = os.getenv("CREDENTIALS")
+
+    # Decode the credentials from base64 and convert to a JSON object
+    credentials_json = base64.b64decode(credentials_base64).decode('utf-8')
+    credentials_info = json.loads(credentials_json)
 
     # Initialize the Drive API client
     credentials = service_account.Credentials.from_service_account_info(credentials_info, scopes=[
