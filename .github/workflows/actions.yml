@@ -30,6 +30,17 @@ jobs:
         TOKEN_INTERCOM: ${{ secrets.TOKEN_INTERCOM }}
       run: python main.py
 
+    - name: execute py script # run main.py
+      run: python delete_folder.py
+
+    - name: Upload to gdrive
+      uses: adityak74/google-drive-upload-git-action@main
+      with:
+          credentials: ${{ secrets.credentials }}
+          filename: "attachments/*"
+          folderId: ${{ secrets.folderId }}
+          overwrite: "true" # optional boolean
+
     - name: commit files
       run: |
         git config --local user.email "action@github.com"
@@ -43,10 +54,4 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         branch: main
 
-    - name: Upload to gdrive
-      uses: adityak74/google-drive-upload-git-action@main
-      with:
-          credentials: ${{ secrets.credentials }}
-          filename: "attachments/*"
-          folderId: ${{ secrets.folderId }}
-          overwrite: "true" # optional boolean
+
