@@ -1,7 +1,7 @@
 import os
 
 # Get directory name
-mydir = 'attachments/'
+mydir = 'attachments'
 
 # Try to remove the tree; if it fails, throw an error using try...except.
 try:
