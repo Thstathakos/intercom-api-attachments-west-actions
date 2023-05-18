@@ -185,8 +185,6 @@ def log_file():
     logger.addHandler(logger_file_handler)
     if __name__ == "__main__":
         logger.info(f'Job Completed')
-        print('Job Completed')
-
 
 def upload_to_google_drive():
     # Path to the folder you want to upload
