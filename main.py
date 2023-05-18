@@ -17,7 +17,7 @@ def get_conversation_ids():
     except KeyError:
         token = "Token not available!"
     # create an empty list to store the ticket IDs
-    ticket_ids = [187701600007224]
+    ticket_ids = [187701600007224,187701600007304]
     initial_timestamp = int(time.time())
     # set up the Intercom API client
     url = "https://api.intercom.io/conversations/search"

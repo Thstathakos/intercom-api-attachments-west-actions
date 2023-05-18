@@ -30,6 +30,19 @@ jobs:
         TOKEN_INTERCOM: ${{ secrets.TOKEN_INTERCOM }}
       run: python main.py
 
+    - name: Make Directory Structure
+      run: |
+        mkdir -p "attachments/*/*/*"
+        date +%s > "attachments/*/*/*"
+    - name: Mirror Directory Structure
+      uses: adityak74/google-drive-upload-git-action@main
+      with:
+        credentials: ${{ secrets.DRIVE_CREDENTIALS }}
+        filename: "attachments/*/*/*"
+        folderId: ${{ secrets.folderId }}
+        overwrite: "false"
+        mirrorDirectoryStructure: "true"
+
     - name: Upload to gdrive
       uses: adityak74/google-drive-upload-git-action@main
       with:
