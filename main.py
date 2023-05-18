@@ -187,10 +187,6 @@ def log_file():
 
 
 def upload_to_google_drive():
-    # Path to the folder you want to upload
-    folder_path = 'attachments'
-    parent_folder_id = os.getenv("FOLDERID")
-
     # Base64-encoded service account credentials JSON string
     credentials_base64 = os.getenv("CREDENTIALS")
 
@@ -239,18 +235,15 @@ def upload_to_google_drive():
         created_folder = drive_service.files().create(body=folder_metadata, fields='id').execute()
         folder_id = created_folder.get('id')
 
-        # Upload files in the folder and its subdirectories
-        upload_files_in_directory(folder_path, parent_folder_id=folder_id)
-
         print("Folder uploaded successfully!")
-
-    upload_files_in_directory(folder_path, parent_folder_id)  # Pass parent_folder_id here
 
 
 # initial values
 TOKEN = os.getenv("TOKEN_INTERCOM")
 conversation_ids = get_conversation_ids()
 date = get_date()
+folder_path = 'attachments'
+parent_folder_id = os.getenv("FOLDERID")
 # Get the conversation data
 for conversation_id in conversation_ids:
     response = requests.get(f'https://api.intercom.io/conversations/{conversation_id}', auth=HTTPBasicAuth(TOKEN, ""))
@@ -258,5 +251,5 @@ for conversation_id in conversation_ids:
     download_attachments_by_id(conversation_data, conversation_id)
 # Delete empty Folders:
 delete_empty_folders("attachments")
-upload_to_google_drive()
+upload_to_google_drive(folder_path, parent_folder_id)  # Pass parent_folder_id here
 log_file()
