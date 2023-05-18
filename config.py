@@ -1,4 +1,3 @@
-TOKEN = "dG9rOmMxZDFjYjIyXzhhYWJfNDM0YV9iYmUzXzg1NjZkM2Q1YjNkZDoxOjA="
 ID = "828998d1-d526-47fb-ab40-f93e248b04db"
 days_to_check = 7
 
