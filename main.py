@@ -12,7 +12,10 @@ import logging.handlers
 
 def get_conversation_ids():
     # set authentication token
-    token = config.TOKEN
+    try:
+        token = os.getenv("TOKEN_INTERCOM")
+    except KeyError:
+        token = "Token not available!"
     # create an empty list to store the ticket IDs
     ticket_ids = []
     initial_timestamp = int(time.time())
