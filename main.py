@@ -190,10 +190,10 @@ def upload_to_google_drive():
     folder_path = 'attachments'
 
     # Path to the service account JSON key file
-    credentials_path = os.getenv("CREDENTIALS")
+    credentials_json = os.getenv("CREDENTIALS")
 
     # Initialize the Drive API client
-    credentials = service_account.Credentials.from_service_account_file(credentials_path, scopes=[
+    credentials = service_account.Credentials.from_service_account_file(credentials_json, scopes=[
         'https://www.googleapis.com/auth/drive'])
     drive_service = build('drive', 'v3', credentials=credentials)
     folder_id = os.getenv("FOLDERID")
