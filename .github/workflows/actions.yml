@@ -5,10 +5,10 @@ name: run main.py
 
 on:
   schedule:
-    - cron: '6 1 * * 6' # At 00:00 on Saturday
-#  push:
-#    branches:
-#      - main
+    - cron: '6 10 * * 6' # At 00:00 on Saturday
+  push:
+    branches:
+      - main
 
 jobs:
   build:
