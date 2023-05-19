@@ -3,11 +3,9 @@
 
 name: run main.py
 
-on:
-  push:
-    branches: [ "main" ]
-  schedule:
-    - cron: '0 0 * * 6' # At 00:00 on Saturday
+#on:
+#  schedule:
+#    - cron: '0 0 * * 6' # At 00:00 on Saturday
 
 jobs:
   build:
