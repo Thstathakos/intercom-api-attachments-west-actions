@@ -186,6 +186,7 @@ def log_file():
     if __name__ == "__main__":
         logger.info(f'Job Completed')
 
+
 def upload_to_google_drive():
     # Path to the folder you want to upload
     folder_path = 'attachments'
