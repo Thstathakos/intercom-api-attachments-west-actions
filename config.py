@@ -1,4 +1,4 @@
-days_to_check = 7
+days_to_check = 9
 
 accepted_phase_list = ["11 West Merchandisers Project", ]
 
