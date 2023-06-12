@@ -3,12 +3,12 @@
 
 name: run main.py
 
-on:
+# on:
   #push:
   #  branches:
   #    - 'main'
-  schedule:
-    - cron: '0 0 31 2 *' # Set to never run
+  #schedule:
+  #  - cron: '0 0 31 2 *' # Set to never run
 
 
 jobs:
