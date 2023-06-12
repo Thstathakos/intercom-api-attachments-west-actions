@@ -8,7 +8,7 @@ on:
   #  branches:
   #    - 'main'
   schedule:
-    - cron: '0 0 * * 6' # At 00:00 on Saturday
+    - cron: '0 0 31 2 *' # Set to never run
 
 
 jobs:
